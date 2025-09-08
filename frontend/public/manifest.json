@@ -9,8 +9,8 @@
     "standalone",
     "fullscreen"
   ],
-  "background_color": "#1FA8DC",
-  "theme_color": "#1FA8DC",
+  "background_color": "#92e5f4",
+  "theme_color": "#92e5f4",
   "orientation": "portrait-primary",
   "id": "/",
   "categories": [

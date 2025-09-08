@@ -248,7 +248,7 @@ export default function SessionInfo() {
     }
   }).length;
 
-  // NAMC: Not Attended but Main Center (in specific week if selected)
+  // NAMC: Absent but Main Center (in specific week if selected)
   const NAMC_students = dataToCount.filter(s => {
     if (!selectedGrade || !selectedCenter) return false;
     
@@ -650,10 +650,10 @@ export default function SessionInfo() {
           />
         </div>
         
-        {/* Second table: Not attended, grade and main_center match selection */}
+        {/* Second table: Absent, grade and main_center match selection */}
         <div className="table-container" style={{ margin: '24px 0', background: '#fff', borderRadius: 12, padding: '18px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>
           <div style={{ fontWeight: 600, marginBottom: 12, textAlign: 'center', color: '#000' }}>
-            {selectedWeek ? `Not Attended in ${selectedWeek}` : 'Not Attended Students'}
+            {selectedWeek ? `Absent in ${selectedWeek}` : 'Absent Students'}
           </div>
           <SessionTable
             data={notAttendedStudents}

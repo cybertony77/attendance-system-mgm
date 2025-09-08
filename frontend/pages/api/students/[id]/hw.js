@@ -83,15 +83,15 @@ export default async function handler(req, res) {
       hwDoneValue = null;
     } else if (hwStatus === "Done") {
       hwDoneValue = "Done";
-    } else if (hwStatus === "Not Complete") {
-      hwDoneValue = "Not Complete";
+    } else if (hwStatus === "Not Completed") {
+      hwDoneValue = "Not Completed";
     } else if (hwStatus === "Not Done") {
       hwDoneValue = "Not Done";
     } else if (hwStatus === "No Homework") {
       hwDoneValue = "No Homework";
     } else {
       // Default fallback
-      hwDoneValue = "Not Done";
+      hwDoneValue = "No Homework";
     }
     
     // Update the specific week in the weeks array

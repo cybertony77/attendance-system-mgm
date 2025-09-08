@@ -169,34 +169,39 @@ export default function StudentInfo() {
       switch (hwValue) {
         case 'Done':
           return '✅ Done';
-        case 'Not Complete':
-          return '⚠️ Not Complete';
+        case 'Not Completed':
+          return '⚠️ Not Completed';
         case 'Not Done':
           return '❌ Not Done';
         case 'No Homework':
           return '❌ No Homework';
+        case '':
+          return '❌ H.W: ...';
         default:
-          return '❌ Not Done';
+          return '❌ No Homework';
       }
     } else if (hwValue === true) {
       // Old format: boolean true
       return '✅ Done';
-    } else {
-      // Old format: boolean false or null
+    } else if (hwValue === false) {
+      // Old format: boolean false
       return '❌ Not Done';
+    } else {
+      // null or undefined - default state
+      return '❌ No Homework';
     }
   };
 
   // Helper function to get attendance status for a week
   const getWeekAttendance = (weekNumber) => {
-    if (!student || !student.weeks) return { attended: false, hwDone: false, quizDegree: null, message_state: false, lastAttendance: null };
+    if (!student || !student.weeks) return { attended: false, hwDone: null, quizDegree: null, message_state: false, lastAttendance: null };
     
     const weekData = student.weeks.find(w => w.week === weekNumber);
-    if (!weekData) return { attended: false, hwDone: false, quizDegree: null, message_state: false, lastAttendance: null };
+    if (!weekData) return { attended: false, hwDone: null, quizDegree: null, message_state: false, lastAttendance: null };
     
     return {
       attended: weekData.attended || false,
-      hwDone: weekData.hwDone || false,
+      hwDone: weekData.hwDone, // Keep original value (null, false, or string)
       quizDegree: weekData.quizDegree || null,
       message_state: weekData.message_state || false,
       lastAttendance: weekData.lastAttendance || null
@@ -505,13 +510,14 @@ export default function StudentInfo() {
                             fontWeight: 'bold',
                             fontSize: '1rem'
                           }}>
-                            {weekData.attended ? (weekData.lastAttendance || '✅ Yes') : '❌ No'}
+                            {weekData.attended ? (weekData.lastAttendance || '✅ Attended') : '❌ Absent'}
                           </span>
                         </Table.Td>
                         <Table.Td style={{ width: '120px', minWidth: '120px', textAlign: 'center' }}>
                           <span style={{ 
                             color: (typeof weekData.hwDone === 'string' && weekData.hwDone === 'Done') || weekData.hwDone === true ? '#28a745' : 
-                                   (typeof weekData.hwDone === 'string' && weekData.hwDone === 'Not Complete') ? '#ffc107' : '#dc3545',
+                                   (typeof weekData.hwDone === 'string' && weekData.hwDone === 'Not Completed') ? '#ffc107' : 
+                                   (typeof weekData.hwDone === 'string' && weekData.hwDone === '') ? '#dc3545' : '#dc3545',
                             fontWeight: 'bold',
                             fontSize: '1rem'
                           }}>

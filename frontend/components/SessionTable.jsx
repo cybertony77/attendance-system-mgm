@@ -25,8 +25,8 @@ export function SessionTable({
       switch (hwValue) {
         case 'Done':
           return '✓ Done';
-        case 'Not Complete':
-          return '⚠ Not Complete';
+        case 'Not Completed':
+          return '⚠ Not Completed';
         case 'Not Done':
           return '✗ Not Done';
         case 'No Homework':
@@ -37,9 +37,12 @@ export function SessionTable({
     } else if (hwValue === true) {
       // Old format: boolean true
       return '✓ Done';
-    } else {
-      // Old format: boolean false or null
+    } else if (hwValue === false) {
+      // Old format: boolean false
       return '✗ Not Done';
+    } else {
+      // null or undefined - default state
+      return '✗ No Homework';
     }
   };
 
@@ -49,7 +52,7 @@ export function SessionTable({
       switch (hwValue) {
         case 'Done':
           return '#28a745';
-        case 'Not Complete':
+        case 'Not Completed':
           return '#ffc107';
         case 'Not Done':
         case 'No Homework':

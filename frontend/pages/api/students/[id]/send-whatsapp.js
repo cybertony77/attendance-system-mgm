@@ -188,7 +188,7 @@ export default async function handler(req, res) {
   • Age: ${student.age || 'N/A'}
   • Grade: ${student.grade || 'N/A'}
   • School: ${student.school || 'N/A'}
-  • Attended: ${currentWeek.attended ? `${currentWeek.lastAttendance}` : 'No'}`;
+  • Attended: ${currentWeek.attended ? `${currentWeek.lastAttendance}` : 'Absent'}`;
 
     // Only show attendance-related info if student attended
     if (currentWeek.attended) {

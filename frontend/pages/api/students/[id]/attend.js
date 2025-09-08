@@ -126,7 +126,7 @@ export default async function handler(req, res) {
         [`weeks.${weekIndex}.attended`]: false,
         [`weeks.${weekIndex}.lastAttendance`]: null,
         [`weeks.${weekIndex}.lastAttendanceCenter`]: null,
-        [`weeks.${weekIndex}.hwDone`]: false,
+        [`weeks.${weekIndex}.hwDone`]: null,
         [`weeks.${weekIndex}.quizDegree`]: null,
         [`weeks.${weekIndex}.message_state`]: false
       };

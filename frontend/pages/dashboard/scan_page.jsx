@@ -36,7 +36,7 @@ export default function QR() {
   const [quizDegreeInput, setQuizDegreeInput] = useState("");
   const [quizDegreeOutOf, setQuizDegreeOutOf] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null); // 'week', 'center', 'homework', or null
-  const [homeworkStatus, setHomeworkStatus] = useState(null); // 'Done', 'Not Complete', 'None', or null for no selection
+  const [homeworkStatus, setHomeworkStatus] = useState(''); // 'Done', 'Not Completed', 'Not Done', 'No Homework', or '' for no selection
   // Simple optimistic state for immediate UI feedback
   const [optimisticHwDone, setOptimisticHwDone] = useState(null);
   const [optimisticAttended, setOptimisticAttended] = useState(null);
@@ -128,11 +128,8 @@ export default function QR() {
 
   // Helper function to get current homework status display
   const getCurrentHomeworkStatus = () => {
-    // If homeworkStatus is explicitly set (including null for clear), use it
+    // If homeworkStatus is explicitly set (including empty string for clear), use it
     if (homeworkStatus !== null && homeworkStatus !== undefined) return homeworkStatus;
-    
-    // If homeworkStatus is null (clear selection), return empty string
-    if (homeworkStatus === null) return "";
     
     // Check optimistic state first, then database value
     const currentHwDone = optimisticHwDone !== null ? optimisticHwDone : student?.hwDone;
@@ -142,7 +139,7 @@ export default function QR() {
       return currentHwDone;
     }
     
-    // If it's null (clear selection), return empty string
+    // If it's null (no data), return empty string for "H.W: ..." display
     if (currentHwDone === null) {
       return "";
     }
@@ -150,7 +147,7 @@ export default function QR() {
     // Fallback to old hwDone boolean format for backward compatibility
     if (currentHwDone === true) return "Done";
     if (currentHwDone === false) return "Not Done";
-    return ""; // Return empty string for default state (no selection)
+    return ""; // Return empty string for default state (shows "H.W: ...")
   };
 
   // Helper function to update student state with current week data
@@ -328,12 +325,32 @@ export default function QR() {
     }
   }, [searchId, studentLoading, rawStudent, studentError]);
 
-  // Clear optimistic state when student or week changes
+  // Clear optimistic state when student or week changes and load homework status from database
   useEffect(() => {
     setOptimisticHwDone(null);
     setOptimisticAttended(null);
-    setHomeworkStatus(null); // Reset homework status
-  }, [student?.id, selectedWeek]);
+    
+    // Load homework status from database when student or week changes
+    if (student && selectedWeek) {
+      const currentHwDone = student.hwDone;
+      if (currentHwDone !== null && currentHwDone !== undefined) {
+        // If it's a string (new format), use it directly
+        if (typeof currentHwDone === 'string') {
+          setHomeworkStatus(currentHwDone);
+        } else if (currentHwDone === true) {
+          setHomeworkStatus('Done');
+        } else if (currentHwDone === false) {
+          setHomeworkStatus('Not Done');
+        } else {
+          setHomeworkStatus('');
+        }
+      } else {
+        setHomeworkStatus('');
+      }
+    } else {
+      setHomeworkStatus('');
+    }
+  }, [student?.id, selectedWeek, student?.hwDone]);
 
   // Auto-attend student when conditions are met (ONLY for QR scans with pre-selected center/week)
   useEffect(() => {
@@ -357,8 +374,9 @@ export default function QR() {
   useEffect(() => {
     const currentAttended = optimisticAttended !== null ? optimisticAttended : student?.attended_the_session;
     if (currentAttended === false) {
-      // If attendance is false, reset other optimistic states to false/null
-      setOptimisticHwDone(false);
+      // If attendance is false, reset homework to null (empty string for "H.W: ..." display)
+      setOptimisticHwDone(null);
+      setHomeworkStatus(''); // Clear homework selection to show "H.W: ..."
       // Clear quiz degree inputs as well
       setQuizDegreeInput("");
       setQuizDegreeOutOf("");
@@ -427,11 +445,16 @@ export default function QR() {
       return;
     }
     
-    setHomeworkStatus(status);
-    setOpenDropdown(null);
+    // Handle clear selection (null) - set to empty string for display
+    if (status === null) {
+      setHomeworkStatus("");
+      setOptimisticHwDone("");
+    } else {
+      setHomeworkStatus(status);
+      setOptimisticHwDone(status);
+    }
     
-    // Set optimistic state to the string value
-    setOptimisticHwDone(status);
+    setOpenDropdown(null);
     
     const weekNumber = getWeekNumber(selectedWeek);
     
@@ -987,35 +1010,37 @@ export default function QR() {
                 ? 'status-attended' 
                 : 'status-not-attended'}`}>
               {(!attendanceCenter || !selectedWeek) 
-                ? '❌ Not Attended' 
+                ? '❌ Absent' 
                 : (optimisticAttended !== null ? optimisticAttended : student.attended_the_session) 
                   ? '✅ Attended' 
-                  : '❌ Not Attended'}
+                  : '❌ Absent'}
             </span>
             <span className={`status-badge ${(!attendanceCenter || !selectedWeek) 
               ? 'status-not-attended' 
-              : getCurrentHomeworkStatus() === ""
+              : getCurrentHomeworkStatus() === "" || getCurrentHomeworkStatus() === "No Homework"
                 ? 'status-not-attended'
                 : getCurrentHomeworkStatus() === "Done"
                   ? 'status-attended' 
-                  : getCurrentHomeworkStatus() === "Not Complete"
+                  : getCurrentHomeworkStatus() === "Not Completed"
                     ? 'status-warning'
                     : getCurrentHomeworkStatus() === "Not Done"
                       ? 'status-not-attended'
                       : 'status-not-attended'}`}>
               {(!attendanceCenter || !selectedWeek) 
-                ? '❌ H.W: Not Done' 
+                ? '❌ H.W: ...' 
                 : getCurrentHomeworkStatus() === ""
                   ? '❌ H.W: ...'
+                  : getCurrentHomeworkStatus() === "No Homework"
+                    ? '❌ H.W: No Homework'
                   : getCurrentHomeworkStatus() === "Done"
                     ? '✅ H.W: Done' 
-                    : getCurrentHomeworkStatus() === "Not Complete"
-                      ? '⚠️ H.W: Not Complete'
+                    : getCurrentHomeworkStatus() === "Not Completed"
+                      ? '⚠️ H.W: Not Completed'
                       : getCurrentHomeworkStatus() === "Not Done"
                         ? '❌ H.W: Not Done'
                       : getCurrentHomeworkStatus() === "No Homework"
                         ? '❌ H.W: No Homework'
-                          : '❌ H.W: Not Done'}
+                          : '❌ H.W: No Homework'}
             </span>
             <span className={`status-badge ${(!attendanceCenter || !selectedWeek) 
               ? 'status-not-attended' 
@@ -1069,7 +1094,7 @@ export default function QR() {
               style={{
                 width: '100%',
                 background: (!attendanceCenter || !selectedWeek) 
-                  ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' // Default "Not Attended" state
+                  ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' // Default "Absent" state
                   : (optimisticAttended !== null ? optimisticAttended : student.attended_the_session) 
                     ? 'linear-gradient(135deg, #dc3545 0%, #e74c3c 100%)' 
                     : 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
@@ -1087,7 +1112,7 @@ export default function QR() {
               {(!attendanceCenter || !selectedWeek) 
                 ? '✅ Mark as Attended' 
                 : (optimisticAttended !== null ? optimisticAttended : student.attended_the_session) 
-                  ? '❌ Mark as Not Attended' 
+                  ? '❌ Mark as Absent' 
                   : '✅ Mark as Attended'}
             </button>
 

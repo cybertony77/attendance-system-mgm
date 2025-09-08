@@ -47,7 +47,7 @@ function createWeeksArray() {
       attended: false,
       lastAttendance: null,
       lastAttendanceCenter: null,
-      hwDone: false,
+      hwDone: null,
       paidSession: false,
       quizDegree: null,
       message_state: false

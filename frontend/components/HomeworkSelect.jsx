@@ -7,7 +7,7 @@ export default function HomeworkSelect({ selectedStatus, onStatusChange, disable
   const actualOnToggle = onToggle || (() => setInternalIsOpen(!internalIsOpen));
   const actualOnClose = onClose || (() => setInternalIsOpen(false));
 
-  const homeworkOptions = ['Done', 'Not Complete', 'Not Done', 'No Homework'];
+  const homeworkOptions = ['Done', 'Not Completed', 'Not Done', 'No Homework'];
 
   const handleStatusSelect = (status) => {
     onStatusChange(status);

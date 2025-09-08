@@ -57,21 +57,24 @@ export default function History() {
       switch (hwValue) {
         case 'Done':
           return '✅ Done';
-        case 'Not Complete':
-          return '⚠️ Not Complete';
+        case 'Not Completed':
+          return '⚠️ Not Completed';
         case 'Not Done':
           return '❌ Not Done';
         case 'No Homework':
           return '❌ No Homework';
         default:
-          return '❌ Not Done';
+          return '❌ No Homework';
       }
     } else if (hwValue === true) {
       // Old format: boolean true
       return '✅ Done';
-    } else {
-      // Old format: boolean false or null
+    } else if (hwValue === false) {
+      // Old format: boolean false
       return '❌ Not Done';
+    } else {
+      // null or undefined - default state
+      return '❌ No Homework';
     }
   };
 
@@ -443,7 +446,7 @@ export default function History() {
                         <Table.Td style={{ width: '100px', minWidth: '100px', textAlign: 'center' }}>
                           <span style={{ 
                             color: (typeof record.hwDone === 'string' && record.hwDone === 'Done') || record.hwDone === true ? '#28a745' : 
-                                   (typeof record.hwDone === 'string' && record.hwDone === 'Not Complete') ? '#ffc107' : '#dc3545',
+                                   (typeof record.hwDone === 'string' && record.hwDone === 'Not Completed') ? '#ffc107' : '#dc3545',
                             fontWeight: 'bold'
                           }}>
                             {getHomeworkDisplayText(record.hwDone)}

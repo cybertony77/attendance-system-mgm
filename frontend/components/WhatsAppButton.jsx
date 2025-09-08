@@ -74,12 +74,14 @@ const WhatsAppButton = ({ student, onMessageSent }) => {
       };
 
       // Create the message using the specified format
+      // Extract first name from full name
+      const firstName = student.name ? student.name.split(' ')[0] : 'Student';
       let whatsappMessage = `Follow up Message:
 
-Dear Parent, ${student.name}
-
+Dear, ${firstName}'s Parent 
+We want to inform you that we are in:
   • Week: ${student.currentWeekNumber || 1}
-  • Attended: ${currentWeek.attended ? `${currentWeek.lastAttendance}` : 'No'}`;
+  • Attendance Info: ${currentWeek.attended ? `${currentWeek.lastAttendance}` : 'Absent'}`;
 
       // Only show attendance-related info if student attended
       if (currentWeek.attended) {
@@ -89,14 +91,14 @@ Dear Parent, ${student.name}
             switch (hwValue) {
               case 'Done':
                 return 'Done';
-              case 'Not Complete':
-                return 'Not Complete';
+              case 'Not Completed':
+                return 'Not Completed';
               case 'Not Done':
                 return 'Not Done';
               case 'No Homework':
                 return 'No Homework';
               default:
-                return 'Not Done';
+                return 'No Homework';
             }
           } else if (hwValue === true) {
             return 'Done';
@@ -114,7 +116,7 @@ Dear Parent, ${student.name}
 
 We are always happy to stay in touch 😊❤
 
-– Mr. George Magdy & Team`;
+Here's Mr. George's team`;
 
       // Create WhatsApp URL with the formatted message
       const whatsappUrl = `https://wa.me/${parentNumber}?text=${encodeURIComponent(whatsappMessage)}`;
